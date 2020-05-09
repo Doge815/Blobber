@@ -16,22 +16,13 @@ namespace imageresize
 
             FileStream OriginalStream = new FileStream(path + file, FileMode.Open, FileAccess.Read);
             Bitmap OriginalBitmap = new Bitmap(OriginalStream);
-            Graphics OriginalGraphics = Graphics.FromImage(OriginalBitmap);
 
             int Width = OriginalBitmap.Width;
             int Height = OriginalBitmap.Height;
             
             Bitmap BlobBitmap = new Bitmap(Width, Height);
             Graphics BlobGraphics = Graphics.FromImage(BlobBitmap);
-#if false
-            for(int i = 0; i < Width; i++)
-            {
-                for(int u = 0; u < Height; u++)
-                {
-                    BlobBitmap.SetPixel(i, u, OriginalBitmap.GetPixel(i, u));
-                }
-            }
-#else
+
             BitmapData OriginalData = OriginalBitmap.LockBits(new Rectangle(0, 0, Width, Height), ImageLockMode.ReadOnly, OriginalBitmap.PixelFormat);
             BitmapData BlobData = BlobBitmap.LockBits(new Rectangle(0, 0, Width, Height), ImageLockMode.WriteOnly, BlobBitmap.PixelFormat);
 
@@ -72,12 +63,11 @@ namespace imageresize
             {
                 TypedReference tr = __makeref(BlobRaw[0]);
                 IntPtr ptr = **(IntPtr**)(&tr);
-                OriginalData.Scan0 = ptr;
+                BlobData.Scan0 = ptr;
             }
 
             OriginalBitmap.UnlockBits(OriginalData);
             BlobBitmap.UnlockBits(BlobData);
-#endif
 
             BlobBitmap.Save($"{path}blobber-{file}", ImageFormat.Jpeg);
         }
