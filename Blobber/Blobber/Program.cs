@@ -1,11 +1,11 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Collections.Generic;
-
-namespace imageresize
+﻿namespace Blobber
 {
+    using System;
+    using System.Drawing;
+    using System.Drawing.Imaging;
+    using System.IO;
+    using System.Collections.Generic;
+    using System.Runtime.InteropServices;
     class Program
     {
         static void Main()
@@ -48,6 +48,7 @@ namespace imageresize
             ///
 
             byte[] BlobRaw = new byte[size];
+            GCHandle gch = GCHandle.Alloc(BlobRaw, GCHandleType.Pinned);
             for(int i = 0; i < Height; i++)
             {
                 for(int u = 0; u < Width; u++)
@@ -70,6 +71,8 @@ namespace imageresize
             BlobBitmap.UnlockBits(BlobData);
 
             BlobBitmap.Save($"{path}blobber-{file}", ImageFormat.Jpeg);
+            gch.Free();
+            GC.Collect();
         }
 
         Color GetAverageColor(List<Color> colors)
